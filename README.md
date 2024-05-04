@@ -1,2 +1,2 @@
 # DigiKerala
-An Application for formulating complains of users on to various forums
+An Application for formulating complaints of users on to various forums
