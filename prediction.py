@@ -31,6 +31,7 @@ def say(text):
 def takeCommand():
     try:
         query = input("Enter details : ") + "select and display the number corresponding to the correct option from 1. Police Department 2. Telecommunication 3. National Informatics Centre 4. Consumer Cell 5. Local Administration"
+
         return query
     except Exception as e:
         return "Some Error Occurred. Sorry from Luna"
@@ -38,4 +39,7 @@ def takeCommand():
 if __name__ == '__main__':
     query = takeCommand()
     response = chat(query)
-    print(f"Luna: {response}")
+    for i in response:
+        if i.isdigit():
+            deptnum=int(i)
+    print(f"Luna: Department number : {deptnum} and response is {response}")
