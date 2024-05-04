@@ -3,7 +3,7 @@ from gemini import Gemini
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Telegram Bot Token (Replace with your actual token)
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = "6305351523:AAG6qgruyfKj0J9dI3BovGmHSurG2I8hQfY"
 
 # Database Connection
 conn = sqlite3.connect("complaints.db")
