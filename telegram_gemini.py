@@ -1,8 +1,38 @@
 import logging
 
-from telegram import Update
+from telegram import Update , ForceReply
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 import google.generativeai as genai
+
+
+
+
+#rom prediction import personality_traits
+import sqlite3
+from datetime import datetime
+current_datetime = datetime.now()
+# Format the date and time as a string (optional)
+formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+# Connect to SQLite database (or create it if it doesn't exist)
+conn = sqlite3.connect('complaints.db')
+cursor = conn.cursor()
+
+# Create table to store department complaints data
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS complaints (
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
+        dept_id INTEGER,
+        dept_name TEXT,
+        comp_status TEXT default 'Pending',
+        comp_data TEXT,
+        mob_no INTEGER,
+        date_of_comp TEXT,
+        date_of_res TEXT Default '-'
+    )
+''')
+
+
 
 # Enable logging
 logging.basicConfig(
@@ -22,6 +52,20 @@ generation_config = {
     "top_k": 1,
     "max_output_tokens": 2048,
 }
+
+
+#Dictionary of departments
+
+dept_dict = {
+    1:"Police Department",
+    2:"Telecommunication",
+    3:"National Informatics Center",
+    4:"Consumer Cell",
+    5:"Local Administration"
+}
+
+
+
 
 model = genai.GenerativeModel(
     model_name="gemini-pro",
@@ -53,6 +97,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("Help!")
 
 
+
+mobileno=123456789
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message and suggest a department."""
     message_text = update.message.text
@@ -62,7 +108,16 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     for i in department_suggestion:
         if i.isdigit():
             deptnum=int(i)
+    cursor.executemany('''
+        INSERT INTO complaints (dept_id, dept_name, comp_status, comp_data, mob_no, date_of_comp)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''',  (deptnum, dept_dict[deptnum], 'Pending',message_text ,mobileno , formatted_datetime))
     await update.message.reply_text(f"You said: {message_text}\n\nSuggested department: {deptnum}")
+
+
+
+
+
 
 def main() -> None:
     """Start the bot."""
